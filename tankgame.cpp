@@ -108,7 +108,8 @@ void TankGame::search_Collides()
                 if(ttt->data(0).toString()=="BLOCK")
                     item->setData(1,false);
 
-                if(ttt->data(0).toString()=="BULLET")
+                //Если попали в пулю, а не в разрыв
+                if(ttt->data(0).toString()=="BULLET" && ttt->data(1).toBool() && item->data(1).toBool())
                 {
                     item->setData(1,false);
                     ttt->setData(1,false);
@@ -119,7 +120,8 @@ void TankGame::search_Collides()
         //Попадание в танк
         if(tank_1->collidesWithItem(item) && item->data(0).toString()=="BULLET")
         {
-            if(item->data(1).toBool()==true && item->data(2).toInt()!=1)
+            //Проверяем пулю (живая - не своя)
+            if(item->data(1).toBool() && item->data(2).toInt()!=1)
             {
                 tank_1->onDamage();
                 item->setData(1,false);
@@ -127,6 +129,7 @@ void TankGame::search_Collides()
         }
         if(tank_2->collidesWithItem(item) && item->data(0).toString()=="BULLET")
         {
+            //Проверяем пулю (живая - не своя)
             if(item->data(1).toBool() && item->data(2).toInt()!=2)
             {
                 tank_2->onDamage();
@@ -149,12 +152,12 @@ void TankGame::search_Collides()
             }
             if(tank_1->y() < item->y())
             {
-                tank_1->setY(tank_1->y()-1);       // left
+                tank_1->setY(tank_1->y()-1);       // top
                 tank_1->STOP();
             }
             if(tank_1->y() > item->y())
             {
-                tank_1->setY(tank_1->y()+1);       // left
+                tank_1->setY(tank_1->y()+1);       // bottom
                 tank_1->STOP();
             }
         }
@@ -172,12 +175,12 @@ void TankGame::search_Collides()
             }
             if(tank_2->y() < item->y())
             {
-                tank_2->setY(tank_2->y()-1);       // left
+                tank_2->setY(tank_2->y()-1);       // top
                 tank_2->STOP();
             }
             if(tank_2->y() > item->y())
             {
-                tank_2->setY(tank_2->y()+1);       // left
+                tank_2->setY(tank_2->y()+1);       // bottom
                 tank_2->STOP();
             }
         }
@@ -198,12 +201,12 @@ void TankGame::search_Collides()
         }
         if(tank_1->y() < tank_2->y())
         {
-            tank_1->setY(tank_1->y()-1);       // left
+            tank_1->setY(tank_1->y()-1);       // top
             tank_1->STOP();
         }
         if(tank_1->y() > tank_2->y())
         {
-            tank_1->setY(tank_1->y()+1);       // left
+            tank_1->setY(tank_1->y()+1);       // bottom
             tank_1->STOP();
         }
     }
@@ -221,12 +224,12 @@ void TankGame::search_Collides()
         }
         if(tank_2->y() < tank_1->y())
         {
-            tank_2->setY(tank_2->y()-1);       // left
+            tank_2->setY(tank_2->y()-1);       // top
             tank_2->STOP();
         }
         if(tank_2->y() > tank_1->y())
         {
-            tank_2->setY(tank_2->y()+1);       // left
+            tank_2->setY(tank_2->y()+1);       // bottom
             tank_2->STOP();
         }
     }
