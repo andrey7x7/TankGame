@@ -10,6 +10,8 @@ TankGame::TankGame(QWidget *parent) :
     scene->setSceneRect(0,0,ui->graphicsView->width(),ui->graphicsView->height());
     ui->graphicsView->setScene(scene);
 
+     ui->graphicsView->setStyleSheet("background-color: rgb(198, 198, 0)");
+
     tank_1 = new Tank(this,1);
     scene->addItem(tank_1);
     tank_1->setPos(500,500);
@@ -87,8 +89,15 @@ void TankGame::keyPress(QKeyEvent *event)
 
 void TankGame::keyRelease(QKeyEvent *event)
 {
-    tank_1->STOP();
-    tank_2->STOP();
+    if (event->key()==Qt::Key_Up || event->key()==Qt::Key_Down)
+    {
+        tank_1->STOP();
+    }
+
+    if (event->key()==Qt::Key_W || event->key()==Qt::Key_S)
+    {
+        tank_2->STOP();
+    }
 }
 
 void TankGame::search_Collides()
@@ -106,8 +115,9 @@ void TankGame::search_Collides()
             for(QGraphicsItem *ttt : item->collidingItems())
             {
                 if(ttt->data(0).toString()=="BLOCK")
+                {
                     item->setData(1,false);
-
+                }
                 //Если попали в пулю, а не в разрыв
                 if(ttt->data(0).toString()=="BULLET" && ttt->data(1).toBool() && item->data(1).toBool())
                 {

@@ -9,7 +9,7 @@ Tank::Tank(QObject *parent,int skin) :  QObject(parent)
     connect(&timer_frame, SIGNAL(timeout()), this, SLOT(next_Frame()));
 
     // Запускаем таймер на генерацию сигнала
-    timer_frame.start(100);
+    timer_frame.start(80);
 }
 
 QRectF Tank::boundingRect() const
