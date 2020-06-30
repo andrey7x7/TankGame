@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,14 +29,16 @@ SOURCES += \
     tankgame.cpp \
     tank.cpp \
     bullet.cpp \
-    card.cpp
+    card.cpp \
+    tcp_lib.cpp
 
 HEADERS += \
         mainwindow.h \
     tankgame.h \
     tank.h \
     bullet.h \
-    card.h
+    card.h \
+    tcp_lib.h
 
 FORMS += \
         mainwindow.ui \

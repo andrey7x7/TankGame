@@ -1,11 +1,12 @@
 #include "tankgame.h"
 #include "ui_tankgame.h"
 
-TankGame::TankGame(QWidget *parent) :
+TankGame::TankGame(QWidget *parent,bool server) :
     QWidget(parent),
     ui(new Ui::TankGame)
 {
     ui->setupUi(this);
+    this->server_mode=server;
     scene = new QGraphicsScene();
     scene->setSceneRect(0,0,ui->graphicsView->width(),ui->graphicsView->height());
     ui->graphicsView->setScene(scene);
@@ -14,11 +15,11 @@ TankGame::TankGame(QWidget *parent) :
 
     tank_1 = new Tank(this,1);
     scene->addItem(tank_1);
-    tank_1->setPos(500,500);
+    tank_1->setPos(450,450);
 
     tank_2 = new Tank(this,2);
     scene->addItem(tank_2);
-    tank_2->setPos(200,200);
+    tank_2->setPos(300,300);
 
     connect(&timer_colides,SIGNAL(timeout()),this,SLOT(search_Collides()));
     timer_colides.start(25);
@@ -39,70 +40,132 @@ TankGame::~TankGame()
 
 void TankGame::keyPress(QKeyEvent *event)
 {
-    if (event->key()==Qt::Key_Up)
+    emit on_keyPress(event->key());
+    gaz=true;
+
+    if(server_mode)
     {
-        tank_1->goUP();
+        //Tank 1
+        if (event->key()==Qt::Key_Up)
+        {
+            tank_1->goUP();
+        }
+
+        if (event->key()==Qt::Key_Down)
+        {
+            tank_1->goDOWN();
+        }
+
+        if (event->key()==Qt::Key_Left)
+        {
+            tank_1->turnLEFT();
+        }
+
+        if (event->key()==Qt::Key_Right)
+        {
+            tank_1->turnRIGHT();
+        }
+
+        if (event->key()==Qt::Key_Space)
+        {
+            scene->addItem(new Bullet(tank_1->pos(),tank_1->getANGLE(),1));
+        }
+
+        //Tank 2
+        if (event->key()==Qt::Key_W)
+        {
+            tank_2->goUP();
+        }
+        if (event->key()==Qt::Key_S)
+        {
+            tank_2->goDOWN();
+        }
+        if (event->key()==Qt::Key_A)
+        {
+            tank_2->turnLEFT();
+        }
+        if (event->key()==Qt::Key_D)
+        {
+            tank_2->turnRIGHT();
+        }
+        if (event->key()==Qt::Key_E)
+        {
+            scene->addItem(new Bullet(tank_2->pos(),tank_2->getANGLE(),2));
+        }
+    }
+    else
+    {
+        //Tank 1
+        if (event->key()==Qt::Key_Up)
+        {
+            tank_2->goUP();
+        }
+
+        if (event->key()==Qt::Key_Down)
+        {
+            tank_2->goDOWN();
+        }
+
+        if (event->key()==Qt::Key_Left)
+        {
+            tank_2->turnLEFT();
+        }
+
+        if (event->key()==Qt::Key_Right)
+        {
+            tank_2->turnRIGHT();
+        }
+
+        if (event->key()==Qt::Key_Space)
+        {
+            scene->addItem(new Bullet(tank_2->pos(),tank_2->getANGLE(),2));
+        }
     }
 
-    if (event->key()==Qt::Key_Down)
-    {
-        tank_1->goDOWN();
-    }
-
-    if (event->key()==Qt::Key_Left)
-    {
-        tank_1->turnLEFT();
-    }
-
-    if (event->key()==Qt::Key_Right)
-    {
-        tank_1->turnRIGHT();
-    }
-
-    if (event->key()==Qt::Key_Space)
-    {
-        scene->addItem(new Bullet(tank_1->pos(),tank_1->getANGLE(),1));
-    }
-
-    //Tank 2
-    if (event->key()==Qt::Key_W)
-    {
-        tank_2->goUP();
-    }
-    if (event->key()==Qt::Key_S)
-    {
-        tank_2->goDOWN();
-    }
-    if (event->key()==Qt::Key_A)
-    {
-        tank_2->turnLEFT();
-    }
-    if (event->key()==Qt::Key_D)
-    {
-        tank_2->turnRIGHT();
-    }
-    if (event->key()==Qt::Key_E)
-    {
-        scene->addItem(new Bullet(tank_2->pos(),tank_2->getANGLE(),2));
-    }
 }
 
 void TankGame::keyRelease(QKeyEvent *event)
 {
-    if (event->key()==Qt::Key_Up || event->key()==Qt::Key_Down)
+    if(server_mode)
     {
-        tank_1->STOP();
-    }
+        if (event->key()==Qt::Key_Up || event->key()==Qt::Key_Down)
+        {
+            tank_1->STOP();
 
-    if (event->key()==Qt::Key_W || event->key()==Qt::Key_S)
-    {
-        tank_2->STOP();
+            gaz=false;
+            QTimer::singleShot(5,this,SLOT(keyStop()));
+        }
+
+        if (event->key()==Qt::Key_W || event->key()==Qt::Key_S)
+        {
+            tank_2->STOP();
+        }
     }
+    else
+    {
+        if (event->key()==Qt::Key_Up || event->key()==Qt::Key_Down)
+        {
+            tank_2->STOP();
+
+            gaz=false;
+            QTimer::singleShot(5,this,SLOT(keyStop()));
+        }
+
+        if (event->key()==Qt::Key_W || event->key()==Qt::Key_S)
+        {
+            tank_1->STOP();
+        }
+    }
+}
+
+void TankGame::keyStop()
+{
+    if(!gaz)
+        emit on_keyPress(127);
 }
 
 void TankGame::search_Collides()
 {
-
     scene->update(ui->graphicsView->rect());
 
     QList <QGraphicsItem * > list = scene->items();
@@ -246,4 +309,74 @@ void TankGame::search_Collides()
 
     ui->progressBar_t1->setValue(tank_1->getHealth());
     ui->progressBar_t2->setValue(tank_2->getHealth());
+}
+
+void TankGame::LanRead(int key)
+{
+    if(server_mode)
+    {
+        //Tank 2
+        if (key==Qt::Key_Up)
+        {
+            tank_2->goUP();
+        }
+
+        if (key==Qt::Key_Down)
+        {
+            tank_2->goDOWN();
+        }
+
+        if (key==Qt::Key_Left)
+        {
+            tank_2->turnLEFT();
+        }
+
+        if (key==Qt::Key_Right)
+        {
+            tank_2->turnRIGHT();
+        }
+
+        if (key==127)
+        {
+            tank_2->STOP();
+        }
+
+        if (key==Qt::Key_Space)
+        {
+            scene->addItem(new Bullet(tank_2->pos(),tank_2->getANGLE(),2));
+        }
+    }
+    else
+    {
+        //Tank 1
+        if (key==Qt::Key_Up)
+        {
+            tank_1->goUP();
+        }
+
+        if (key==Qt::Key_Down)
+        {
+            tank_1->goDOWN();
+        }
+
+        if (key==Qt::Key_Left)
+        {
+            tank_1->turnLEFT();
+        }
+
+        if (key==Qt::Key_Right)
+        {
+            tank_1->turnRIGHT();
+        }
+
+        if (key==127)
+        {
+            tank_1->STOP();
+        }
+
+        if (key==Qt::Key_Space)
+        {
+            scene->addItem(new Bullet(tank_1->pos(),tank_1->getANGLE(),1));
+        }
+    }
 }

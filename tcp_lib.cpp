@@ -32,9 +32,9 @@ void TCP_Server::on_read()
 }
 
 //Сервер отправил сообщение клиенту
-void TCP_Server::on_write(QMap <QString,int> map)
+void TCP_Server::on_write(int key)
 {
-    if(client)clientSocket->write(Socket_Serialize(map));
+    if(client)clientSocket->write(Socket_Serialize(key));
     qDebug()<<"SERVER send message";
 }
 
@@ -54,9 +54,9 @@ void TCP_Client::on_connect(QHostAddress ip_add,int port)
 }
 
 //Клиен отправил сообщение серверу
-void TCP_Client::on_write(QMap <QString,int> map)
+void TCP_Client::on_write(int key)
 {
-    client_tcp->write(Socket_Serialize(map));
+    client_tcp->write(Socket_Serialize(key));
     qDebug()<<"SOCKET send message";
 }
 

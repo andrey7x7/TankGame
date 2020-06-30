@@ -19,7 +19,7 @@ class TankGame : public QWidget
     Q_OBJECT
 
 public:
-    explicit TankGame(QWidget *parent = 0);
+    explicit TankGame(QWidget *parent = 0, bool server=false);
     ~TankGame();
     QGraphicsScene  *scene;
     QTimer timer_colides;
@@ -30,10 +30,19 @@ public:
 public slots:
     void keyPress(QKeyEvent *event);
     void keyRelease(QKeyEvent *event);
+    void LanRead(int key);
 private slots:
     void search_Collides();
+
+    void keyStop();
+signals:
+    void on_keyPress(int key);
+    void on_keyRelease(int key);
+
 private:
     Ui::TankGame *ui;
+    bool server_mode;
+    bool gaz=false;
 
 
 };

@@ -11,27 +11,27 @@
 struct MySerialize
 {
     //Функция сериализации
-    QByteArray Socket_Serialize(QMap <QString,int> map)
+    QByteArray Socket_Serialize(int key)
     {
         QByteArray dat;
 
         QDataStream stream(&dat,QIODevice::WriteOnly);
-        stream << map;
+        stream << key;
 
         return dat;
     };
 
     //Функция десериализации
-    QMap <QString,int> Socket_Deserialize(QByteArray dat)
+    int Socket_Deserialize(QByteArray dat)
     {
-        QMap <QString,int> map;
+        int key;
         QByteArray datas;
 
         QDataStream stream(&datas,QIODevice::ReadOnly);
         datas = dat;
-        stream >> map;
+        stream >> key;
 
-        return map;
+        return key;
     };
 };
 
@@ -43,7 +43,7 @@ public:
 
 public slots:
     void on_connectToServer();
-    void on_write(QMap<QString, int> map);
+    void on_write(int key);
     void on_read();
 
 private:
@@ -53,7 +53,7 @@ private:
 
 signals:
     void Client_Connected();
-    void Client_Message(QMap<QString, int> map);
+    void Client_Message(int key);
 };
 
 
@@ -68,11 +68,11 @@ private:
 
 public slots:
     void on_connect(QHostAddress ip_add, int port);
-    void on_write(QMap<QString, int> map);
+    void on_write(int key);
     void on_read();
 
 signals:
-    void Server_Message(QMap<QString, int> map);
+    void Server_Message(int key);
 };
 
 #endif // TCP_LIB_H
