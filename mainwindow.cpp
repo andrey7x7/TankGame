@@ -40,7 +40,8 @@ void MainWindow::lanGame()
         this->setWindowTitle("Tank Game (Server)");
         server_1 = new TCP_Server(this,1024);
         connect(server_1,SIGNAL(Client_Message(int)),game_1,SLOT(LanRead(int)));                    //прием данных от клиента
-        connect(game_1,SIGNAL(on_keyPress(int)),server_1,SLOT(on_write(int)));    //отправка данных серверу //отправка данных клиенту
+        //connect(game_1,SIGNAL(on_keyPress(int)),server_1,SLOT(on_write(int)));    //отправка данных серверу //отправка данных клиенту
+        connect(game_1,SIGNAL(getPositions(This_position*)),server_1,SLOT(on_write_point(This_position*)));    //отправка данных серверу
         thread_s->start();
     }
 
@@ -55,8 +56,10 @@ void MainWindow::lanGame()
         QString IP = ui->lineEdit_IP->text();
         client_1->on_connect(QHostAddress(IP),1024);
 
-        connect(client_1,SIGNAL(Server_Message(int)),game_1,SLOT(LanRead(int)));  //прием данных от сервера
+        //connect(client_1,SIGNAL(Server_Message(int)),game_1,SLOT(LanRead(int)));  //прием данных от сервера
+        connect(client_1,SIGNAL(Server_Message(This_position)),game_1,SLOT(SincPlane(This_position)));  //прием данных от сервера
         connect(game_1,SIGNAL(on_keyPress(int)),client_1,SLOT(on_write(int)));    //отправка данных серверу
+
     }
 }
 

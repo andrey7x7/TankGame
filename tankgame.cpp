@@ -31,6 +31,12 @@ TankGame::TankGame(QWidget *parent,bool server) :
     {
         scene->addItem(item);
     }
+
+    if(server)
+    {
+        connect(&timer_sinc,SIGNAL(timeout()),this,SLOT(SincClient()));
+        timer_sinc.start(500);
+    }
 }
 
 TankGame::~TankGame()
@@ -378,5 +384,21 @@ void TankGame::LanRead(int key)
         {
             scene->addItem(new Bullet(tank_1->pos(),tank_1->getANGLE(),1));
         }
+
     }
+}
+
+void TankGame::SincClient()
+{
+    This_position * pos = new This_position(QPoint(tank_1->pos().x(),tank_1->pos().y()),QPoint(tank_2->pos().x(),tank_2->pos().y()));
+    emit getPositions(pos);
+}
+
+void TankGame::SincPlane(This_position pos)
+{
+    qDebug()<<"Sinc Point";
+    tank_1->setX(pos.get_t1().x());
+    tank_1->setY(pos.get_t1().y());
+    tank_2->setX(pos.get_t2().x());
+    tank_2->setY(pos.get_t2().y());
 }

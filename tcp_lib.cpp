@@ -38,6 +38,13 @@ void TCP_Server::on_write(int key)
     qDebug()<<"SERVER send message";
 }
 
+//Сервер отправил диспозицию клиенту
+void TCP_Server::on_write_point(This_position* pos)
+{
+    if(client)clientSocket->write(Point_Serialize(pos));
+    qDebug()<<"SERVER send point";
+}
+
 
 //**********************   Client   ***************************
 
@@ -69,7 +76,8 @@ void TCP_Client::on_read()
     {
         dat = client_tcp->readAll();
     }
-    emit Server_Message(Socket_Deserialize(dat));
+    //emit Server_Message(Socket_Deserialize(dat));
+    emit Server_Message(Point_Deserialize(dat));
     qDebug()<<"SOCKET read message";
 }
 

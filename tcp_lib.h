@@ -66,7 +66,7 @@ struct MySerialize
     };
 
     //Функция сериализации
-    QByteArray Point_Serialize(This_position &pos)
+    QByteArray Point_Serialize(This_position *pos)
     {
         QByteArray dat;
 
@@ -101,6 +101,7 @@ public slots:
     void on_write(int key);
     void on_read();
 
+    void on_write_point(This_position *pos);
 private:
     bool client=false;//наличие клиента
     QTcpServer *server_tcp;
@@ -127,7 +128,7 @@ public slots:
     void on_read();
 
 signals:
-    void Server_Message(int key);
+    void Server_Message(This_position pos);
 };
 
 #endif // TCP_LIB_H
