@@ -7,6 +7,37 @@
 #include <QDataStream>
 #include "qdebug.h"
 #include "QMap"
+#include "QPoint"
+
+//[class Serializable]
+class This_position
+{
+public:
+    This_position() {}
+    This_position(QPoint t1,QPoint t2) {this->t1 = t1;this->t2=t2;}
+
+    QPoint get_t1(){return t1;}
+    QPoint get_t2(){return t2;}
+
+    QPoint t1;
+    QPoint t2;
+
+    //перегрузка записи
+    friend QDataStream &operator <<(QDataStream &stream, This_position &pos)
+    {
+        stream << pos.t1;
+        stream << pos.t2;
+        return stream;
+    }
+
+    //перегрузка чтения
+    friend QDataStream &operator >>(QDataStream &stream, This_position &pos)
+    {
+        stream >> pos.t1;
+        stream >> pos.t2;
+        return stream;
+    }
+};
 
 struct MySerialize
 {
@@ -32,6 +63,30 @@ struct MySerialize
         stream >> key;
 
         return key;
+    };
+
+    //Функция сериализации
+    QByteArray Point_Serialize(This_position &pos)
+    {
+        QByteArray dat;
+
+        QDataStream stream(&dat,QIODevice::WriteOnly);
+        stream << pos;
+
+        return dat;
+    };
+
+    //Функция десериализации
+    This_position Point_Deserialize(QByteArray dat)
+    {
+        This_position pos;
+        QByteArray datas;
+
+        QDataStream stream(&datas,QIODevice::ReadOnly);
+        datas = dat;
+        stream >> pos;
+
+        return pos;
     };
 };
 
